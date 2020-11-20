@@ -40,190 +40,190 @@ COMMON_DATASETS = {
     },
     'coco_2017_train': {
         _IM_DIR:
-            _DATA_DIR + '/coco/images/train2017',
+            _DATA_DIR + '/COCO/images/train2017',
         _ANN_FN:
-            _DATA_DIR + '/coco/annotations/instances_train2017.json',
+            _DATA_DIR + '/COCO/annotations/instances_train2017.json',
         _FIELDS:
             {'ann_types': ['bbox', 'mask']}
     },
     'coco_2017_val': {
         _IM_DIR:
-            _DATA_DIR + '/coco/images/val2017',
+            _DATA_DIR + '/COCO/images/val2017',
         _ANN_FN:
-            _DATA_DIR + '/coco/annotations/instances_val2017.json',
+            _DATA_DIR + '/COCO/annotations/instances_val2017.json',
         _FIELDS:
             {'ann_types': ['bbox', 'mask']}
     },
     'coco_2017_test': {
         _IM_DIR:
-            _DATA_DIR + '/coco/images/test2017',
+            _DATA_DIR + '/COCO/images/test2017',
         _ANN_FN:
-            _DATA_DIR + '/coco/annotations/image_info_test2017.json',
+            _DATA_DIR + '/COCO/annotations/image_info_test2017.json',
         _FIELDS:
             {'ann_types': ['bbox', 'mask']}
     },
     'coco_2017_test-dev': {
         _IM_DIR:
-            _DATA_DIR + '/coco/images/test2017',
+            _DATA_DIR + '/COCO/images/test2017',
         _ANN_FN:
-            _DATA_DIR + '/coco/annotations/image_info_test-dev2017.json',
+            _DATA_DIR + '/COCO/annotations/image_info_test-dev2017.json',
         _FIELDS:
             {'ann_types': ['bbox', 'mask']}
     },
     'coco_2017_train_lvisanno': {
         _IM_DIR:
-            _DATA_DIR + '/coco/images/train2017',
+            _DATA_DIR + '/COCO/images/train2017',
         _ANN_FN:
-            _DATA_DIR + '/coco/annotations/lvis/lvis_v0.5_train_cocofied.json',
+            _DATA_DIR + '/COCO/annotations/lvis/lvis_v0.5_train_cocofied.json',
         _FIELDS:
             {'ann_types': ['bbox', 'mask']}
     },
     'coco_2017_val_lvisanno': {
         _IM_DIR:
-            _DATA_DIR + '/coco/images/val2017',
+            _DATA_DIR + '/COCO/images/val2017',
         _ANN_FN:
-            _DATA_DIR + '/coco/annotations/lvis/lvis_v0.5_val_cocofied.json',
+            _DATA_DIR + '/COCO/annotations/lvis/lvis_v0.5_val_cocofied.json',
         _FIELDS:
             {'ann_types': ['bbox', 'mask']}
     },
     'coco_stuff_train': {
         _IM_DIR:
-            _DATA_DIR + '/coco/images/train2014',
+            _DATA_DIR + '/COCO/images/train2014',
         _ANN_FN:
-            _DATA_DIR + '/coco/annotations/stuff_train.json',
+            _DATA_DIR + '/COCO/annotations/stuff_train.json',
         _FIELDS:
             {'ann_types': ['semseg']}
     },
     'coco_stuff_val': {
         _IM_DIR:
-            _DATA_DIR + '/coco/images/val2014',
+            _DATA_DIR + '/COCO/images/val2014',
         _ANN_FN:
-            _DATA_DIR + '/coco/annotations/stuff_val.json',
+            _DATA_DIR + '/COCO/annotations/stuff_val.json',
         _FIELDS:
             {'ann_types': ['semseg']}
     },
     'keypoints_coco_2017_train': {
         _IM_DIR:
-            _DATA_DIR + '/coco/images/train2017',
+            _DATA_DIR + '/COCO/images/train2017',
         _ANN_FN:
-            _DATA_DIR + '/coco/annotations/person_keypoints_train2017.json',
+            _DATA_DIR + '/COCO/annotations/person_keypoints_train2017.json',
         _FIELDS:
             {'ann_types': ['bbox', 'mask', 'keypoints']}
     },
     'keypoints_coco_2017_val': {
         _IM_DIR:
-            _DATA_DIR + '/coco/images/val2017',
+            _DATA_DIR + '/COCO/images/val2017',
         _ANN_FN:
-            _DATA_DIR + '/coco/annotations/person_keypoints_val2017.json',
+            _DATA_DIR + '/COCO/annotations/person_keypoints_val2017.json',
         _FIELDS:
             {'ann_types': ['bbox', 'mask', 'keypoints']}
     },
     'keypoints_coco_2017_test': {
         _IM_DIR:
-            _DATA_DIR + '/coco/images/test2017',
+            _DATA_DIR + '/COCO/images/test2017',
         _ANN_FN:
-            _DATA_DIR + '/coco/annotations/image_info_test2017.json',
+            _DATA_DIR + '/COCO/annotations/image_info_test2017.json',
         _FIELDS:
             {'ann_types': ['bbox', 'mask', 'keypoints']}
     },
     'keypoints_coco_2017_test-dev': {
         _IM_DIR:
-            _DATA_DIR + '/coco/images/test2017',
+            _DATA_DIR + '/COCO/images/test2017',
         _ANN_FN:
-            _DATA_DIR + '/coco/annotations/image_info_test-dev2017.json',
+            _DATA_DIR + '/COCO/annotations/image_info_test-dev2017.json',
         _FIELDS:
             {'ann_types': ['bbox', 'mask', 'keypoints']}
     },
     'dense_coco_2017_train': {
         _IM_DIR:
-            _DATA_DIR + '/coco/images/train2017',
+            _DATA_DIR + '/COCO/images/train2017',
         _ANN_FN:
-            _DATA_DIR + '/coco/annotations/DensePoseData/densepose_coco_train2017.json',
+            _DATA_DIR + '/COCO/annotations/DensePoseData/densepose_coco_train2017.json',
         _FIELDS:
             {'ann_types': ['bbox', 'mask', 'uv'],
              'uv_root': _DATA_DIR + '/coco/annotations/'}
     },
     'dense_coco_2017_val': {
         _IM_DIR:
-            _DATA_DIR + '/coco/images/val2017',
+            _DATA_DIR + '/COCO/images/val2017',
         _ANN_FN:
-            _DATA_DIR + '/coco/annotations/DensePoseData/densepose_coco_val2017.json',
+            _DATA_DIR + '/COCO/annotations/DensePoseData/densepose_coco_val2017.json',
         _FIELDS:
             {'ann_types': ['bbox', 'mask', 'uv'],
              'uv_root': _DATA_DIR + '/coco/annotations/'}
     },
     'dense_coco_2017_test': {
         _IM_DIR:
-            _DATA_DIR + '/coco/images/test2017',
+            _DATA_DIR + '/COCO/images/test2017',
         _ANN_FN:
-            _DATA_DIR + '/coco/annotations/DensePoseData/densepose_coco_test.json',
+            _DATA_DIR + '/COCO/annotations/DensePoseData/densepose_coco_test.json',
         _FIELDS:
             {'ann_types': ['bbox', 'mask', 'uv'],
              'uv_root': _DATA_DIR + '/coco/annotations/'}
     },
     'lvis_v0.5_train': {
         _IM_DIR:
-            _DATA_DIR + '/coco/images/train2017',
+            _DATA_DIR + '/COCO/images/train2017',
         _ANN_FN:
-            _DATA_DIR + '/coco/annotations/lvis/lvis_v0.5_train.json',
+            _DATA_DIR + '/COCO/annotations/lvis/lvis_v0.5_train.json',
         _FIELDS:
             {'ann_types': ['bbox', 'mask'],
              'seg_root': _DATA_DIR + '/coco/images/stuffthingmaps/train2017'}
     },
     'lvis_v0.5_val': {
         _IM_DIR:
-            _DATA_DIR + '/coco/images/val2017',
+            _DATA_DIR + '/COCO/images/val2017',
         _ANN_FN:
-            _DATA_DIR + '/coco/annotations/lvis/lvis_v0.5_val_2017.json',
+            _DATA_DIR + '/COCO/annotations/lvis/lvis_v0.5_val_2017.json',
         _FIELDS:
             {'ann_types': ['bbox', 'mask'],
              'seg_root': _DATA_DIR + '/coco/images/stuffthingmaps/val2017'}
     },
     'lvis_v0.5_test': {
         _IM_DIR:
-            _DATA_DIR + '/coco/images/test2017',
+            _DATA_DIR + '/COCO/images/test2017',
         _ANN_FN:
-            _DATA_DIR + '/coco/annotations/lvis/lvis_v0.5_image_info_test.json',
+            _DATA_DIR + '/COCO/annotations/lvis/lvis_v0.5_image_info_test.json',
         _FIELDS:
             {'ann_types': ['bbox', 'mask']}
     },
     'lvis_v1_train': {
         _IM_DIR:
-            _DATA_DIR + '/coco/images',
+            _DATA_DIR + '/COCO/images',
         _ANN_FN:
-            _DATA_DIR + '/coco/annotations/lvis/lvis_v1_train.json',
+            _DATA_DIR + '/COCO/annotations/lvis/lvis_v1_train.json',
         _FIELDS:
             {'ann_types': ['bbox', 'mask']}
     },
     'lvis_v1_val': {
         _IM_DIR:
-            _DATA_DIR + '/coco/images',
+            _DATA_DIR + '/COCO/images',
         _ANN_FN:
-            _DATA_DIR + '/coco/annotations/lvis/lvis_v1_val.json',
+            _DATA_DIR + '/COCO/annotations/lvis/lvis_v1_val.json',
         _FIELDS:
             {'ann_types': ['bbox', 'mask']}
     },
     'lvis_v1_train-val': {
         _IM_DIR:
-            _DATA_DIR + '/coco/images',
+            _DATA_DIR + '/COCO/images',
         _ANN_FN:
-            _DATA_DIR + '/coco/annotations/lvis/lvis_v1_train_val.json',
+            _DATA_DIR + '/COCO/annotations/lvis/lvis_v1_train_val.json',
         _FIELDS:
             {'ann_types': ['bbox', 'mask']}
     },
     'lvis_v1_test-dev': {
         _IM_DIR:
-            _DATA_DIR + '/coco/images',
+            _DATA_DIR + '/COCO/images',
         _ANN_FN:
-            _DATA_DIR + '/coco/annotations/lvis/lvis_v1_image_info_test_dev.json',
+            _DATA_DIR + '/COCO/annotations/lvis/lvis_v1_image_info_test_dev.json',
         _FIELDS:
             {'ann_types': ['bbox', 'mask']}
     },
     'lvis_v1_test-challenge': {
         _IM_DIR:
-            _DATA_DIR + '/coco/images',
+            _DATA_DIR + '/COCO/images',
         _ANN_FN:
-            _DATA_DIR + '/coco/annotations/lvis/lvis_v1_image_info_test_challenge.json',
+            _DATA_DIR + '/COCO/annotations/lvis/lvis_v1_image_info_test_challenge.json',
         _FIELDS:
             {'ann_types': ['bbox', 'mask']}
     },
