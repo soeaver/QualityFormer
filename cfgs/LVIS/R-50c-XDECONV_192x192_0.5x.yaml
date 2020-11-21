@@ -1,6 +1,6 @@
 PIXEL_MEANS: [0.485, 0.456, 0.406]
 PIXEL_STDS: [0.229, 0.224, 0.225]
-CKPT: 'ckpts/mscoco/R-50c-XDECONV_192x192_0.5x'
+CKPT: 'ckpts/LVIS/R-50c-XDECONV_192x192_0.5x'
 DISPLAY_ITER: 20
 MODEL:
   FPN_ON: True
@@ -12,7 +12,7 @@ BACKBONE:
     STRIDE_3X3: True
     USE_3x3x3HEAD: True
 MASK:
-  NUM_CLASSES: 81
+  NUM_CLASSES: 1203
   QUALITY_WEIGHTS: (1.0, 0.0, 0.0)
 SOLVER:
   MAX_EPOCHS: 70
@@ -26,12 +26,12 @@ SOLVER:
   STEPS: [45, 60]
 TRAIN:
   WEIGHTS: 'weights/pytorch-model/resnet50_1x64d/resnet50_1x64d-77.50.pth'
-  DATASETS: ('coco_2017_train', )
+  DATASETS: ('lvis_v1_train', )
   BATCH_SIZE: 512
   SCALES: ([192, 192],)
 TEST:
   WEIGHTS: ''
-  DATASETS: ('coco_2017_val', )
+  DATASETS: ('lvis_v1_val', )
   IMS_PER_GPU: 1
   SCALE: [192, 192]
   FREQUENCY_EPOCHS: -1
