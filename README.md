@@ -1,11 +1,12 @@
 # News
+- Pytorch official code of QANet-imprv is opened. (01/16/2020)
 - Pytorch official code of QANet is released. (01/11/2020)
 
 
 # Introduction
-Official implementation of **Quality-Aware Network for Human Parsing**
+Official implementation of **Quality-Aware Network for Instance-Level Dense Prediction**
 
-In this repository, we release the QANet code in Pytorch.
+In this repository, we release the QANet-imprv code in Pytorch.
 
 - QANet architecture:
 <p align="center"><img width="90%" src="docs/qanet.png" /></p>
@@ -21,6 +22,13 @@ If you use QANet, please use the following BibTeX entry.
   author = {Lu Yang and Qing Song and Zhihui Wang and Zhiwei Liu and Songcen Xu and Zhihao Li},
   booktitle = {arXiv preprint arXiv:20xx.xxxxx},
   year = {2020}
+}
+
+@inproceedings{yang2021qanet-imprv,
+  title = {Quality-Aware Network for Instance-Level Dense Prediction},
+  author = {Lu Yang and Qing Song and Zhihui Wang and Zhiwei Liu and Songcen Xu and Zhihao Li},
+  booktitle = {arXiv preprint arXiv:21xx.xxxxx},
+  year = {2021}
 }
 
 ```
