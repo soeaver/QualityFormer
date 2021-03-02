@@ -20,15 +20,16 @@ class QualityEncoder(torch.nn.Module):
         norm = cfg.PARSING.QUALITY.NORM
         self.q_dim = q_dim
 
-        self.feat_conv3x3 = make_conv(self.dim_in, q_dim, 3, 1, 1, norm=make_norm(q_dim, norm=norm), act=make_act())
-        self.prob_conv3x3 = make_conv(num_parsing, q_dim, 3, 1, 1, norm=make_norm(q_dim, norm=norm), act=make_act())
-        self.iou_conv1x1 = make_conv(1, q_dim, 1, 1, 0, norm=make_norm(q_dim, norm=norm), act=make_act())
+        self.feat_conv = make_conv(self.dim_in, q_dim, 1, 1, 0, norm=make_norm(q_dim, norm=norm), act=make_act())
+        self.prob_conv = make_conv(num_parsing, q_dim, 3, 1, 1, norm=make_norm(q_dim, norm=norm), act=make_act())
+        self.iou_conv = make_conv(1, q_dim, 1, 1, 0, norm=make_norm(q_dim, norm=norm), act=make_act())
 
-        self.prob_quality = make_conv(q_dim, q_dim, 3, 1, 1, norm=make_norm(q_dim, norm=norm), act=make_act())
-        self.iou_quality = make_conv(1, q_dim, 3, 1, 1, norm=make_norm(q_dim, norm=norm), act=make_act())
+        self.prob_quality = make_conv(q_dim, q_dim, 1, 1, 0, norm=make_norm(q_dim, norm=norm), act=make_act())
+        self.iou_quality = make_conv(1, q_dim, 1, 1, 0, norm=make_norm(q_dim, norm=norm), act=make_act())
 
         self.conv_out = nn.Sequential(
-            make_conv(q_dim * 2, output_dim, 3, 1, 1, norm=make_norm(output_dim, norm=norm), act=make_act()),
+            make_conv(q_dim * 2, q_dim, 1, 1, 0, norm=make_norm(q_dim, norm=norm), act=make_act()),
+            make_conv(q_dim, output_dim, 3, 1, 1, norm=make_norm(output_dim, norm=norm), act=make_act())
             # nn.Dropout2d(dropout)
         )
 
@@ -47,15 +48,15 @@ class QualityEncoder(torch.nn.Module):
         feat = features[-1]
         b, c, h, w = feat.size()
         # [b, c, h, w] -> [b, q_dim, h, w]
-        feat = self.feat_conv3x3(feat)
+        feat = self.feat_conv(feat)
         # [b, q_dim, h, w] -> [b, q_dim, hw] -> [b, hw, q_dim]
         feat_key = feat.view(b, self.q_dim, -1).permute(0, 2, 1)
 
         # [b, num_parsing, h, w] -> [b, q_dim, h, w] -> [b, q_dim, hw]
-        prob_query = self.prob_conv3x3(parsing_logits).view(b, self.q_dim, -1)
+        prob_query = self.prob_conv(parsing_logits).view(b, self.q_dim, -1)
 
         # [b, 1, 1, 1] -> [b, q_dim, 1, 1] -> [b, q_dim, 1]
-        iou_query = self.iou_conv1x1(iou_pred.view(b, 1, 1, 1)).view(b, self.q_dim, -1)
+        iou_query = self.iou_conv(iou_pred.view(b, 1, 1, 1)).view(b, self.q_dim, -1)
 
         # [b, q_dim, hw] * [b, hw, q_dim] -> [b, q_dim, q_dim] -> [b, q_dim, q_dim, 1]
         prob_quality = torch.matmul(prob_query, feat_key).unsqueeze(3)

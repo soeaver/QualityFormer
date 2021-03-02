@@ -15,10 +15,18 @@ class Parsing(torch.nn.Module):
         self.spatial_in = spatial_in
         self.parsingiou_on = cfg.PARSING.PARSINGIOU_ON
         self.quality_on = cfg.PARSING.QUALITY_ON
+        self.quality_num = cfg.PARSING.QUALITY.STACK_NUM
 
         if self.quality_on:
-            self.Quality = Quality(cfg, self.dim_in, self.spatial_in)
-            self.dim_in = self.Quality.dim_out
+            if self.quality_num == 1:
+                self.Quality = Quality(cfg, self.dim_in, self.spatial_in)
+                self.dim_in = self.Quality.dim_out
+            else:
+                dim_in = self.dim_in
+                for i in range(1, self.quality_num + 1):
+                    setattr(self, 'Quality' + str(i), Quality(cfg, dim_in, self.spatial_in))
+                    dim_in = getattr(self, 'Quality' + str(i)).dim_out
+                self.dim_in = dim_in
 
         head = registry.PARSING_HEADS[cfg.PARSING.PARSING_HEAD]
         self.Head = head(cfg, self.dim_in, self.spatial_in)
@@ -43,8 +51,14 @@ class Parsing(torch.nn.Module):
         losses = dict()
 
         if self.quality_on:
-            loss_quality, conv_features = self.Quality(conv_features, targets['parsing'])
-            losses.update(loss_quality)
+            if self.quality_num == 1:
+                loss_quality, conv_features = self.Quality(conv_features, targets['parsing'])
+                losses.update(loss_quality)
+            else:
+                for i in range(1, self.quality_num + 1):
+                    loss_quality, conv_features = getattr(self, 'Quality' + str(i))(conv_features, targets['parsing'])
+                    for l_k, l_v in loss_quality.items():
+                        losses['{}_{}'.format(l_k, i)] = l_v * i
 
         x = self.Head(conv_features)
         logits = self.Output(x)
@@ -60,7 +74,11 @@ class Parsing(torch.nn.Module):
 
     def _forward_test(self, conv_features):
         if self.quality_on:
-            _, conv_features = self.Quality(conv_features, None)
+            if self.quality_num == 1:
+                _, conv_features = self.Quality(conv_features, None)
+            else:
+                for i in range(1, self.quality_num + 1):
+                    _, conv_features = getattr(self, 'Quality' + str(i))(conv_features, None)
 
         x = self.Head(conv_features)
         logits = self.Output(x)

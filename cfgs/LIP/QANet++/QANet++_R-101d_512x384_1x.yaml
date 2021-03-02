@@ -42,7 +42,7 @@ PARSING:
   QUALITY_WEIGHTS: (1.0, 0.5, 3.0)  # QAM
 SOLVER:
   MAX_EPOCHS: 140
-  BASE_LR: 0.001
+  BASE_LR: 0.0005
   OPTIMIZER: 'ADAM'
   MOMENTUM: 0.9
   WEIGHT_DECAY: 0.0001
@@ -53,7 +53,7 @@ SOLVER:
 TRAIN:
   WEIGHTS: 'ckpts/cls/imagenet/resnet/resnet101d/weights_epoch120-80.14.pth'
   DATASETS: ('LIP_train', )
-  BATCH_SIZE: 128
+  BATCH_SIZE: 64
   SCALES: ([384, 512],)
 TEST:
   WEIGHTS: ''

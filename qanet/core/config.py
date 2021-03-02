@@ -931,6 +931,9 @@ _C.PARSING.QUALITY.QUALITY_HEAD = "quality_head"
 # Output module of Quality head
 _C.PARSING.QUALITY.QUALITY_OUTPUT = "quality_output"
 
+# Number of stacked quality module
+_C.PARSING.QUALITY.STACK_NUM = 1
+
 # Number of share Conv layers in the Quality head
 _C.PARSING.QUALITY.NUM_SHARE_CONVS = 2
 

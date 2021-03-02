@@ -16,7 +16,7 @@ class QualityOutput(nn.Module):
         self.parsing_iou = nn.Linear(dim_in_i, 1)
 
         self.dim_out = [cfg.PARSING.NUM_PARSING, 1]
-        self.spatial_out = [1.0, (1, 1)]
+        self.spatial_out = [self.spatial_in_p, (1, 1)]
 
         self._init_weights()
 
@@ -35,10 +35,6 @@ class QualityOutput(nn.Module):
         xp, xi = x
 
         xp = self.parsing_score(xp)
-        up_scale = 1
-        if up_scale > 1:
-            xp = F.interpolate(xp, scale_factor=up_scale, mode="bilinear", align_corners=False)
-
         xi = self.parsing_iou(xi.view(xi.size(0), -1))
 
         return xp, xi

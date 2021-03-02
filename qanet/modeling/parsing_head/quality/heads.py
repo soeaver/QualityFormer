@@ -29,7 +29,7 @@ class QualityHead(nn.Module):
         share_layers = []
         for i in range(num_share_convs):
             share_layers.append(
-                make_conv(self.dim_in, parsing_conv_dim, kernel_size=3, stride=1, dilation=1,
+                make_conv(self.dim_in, parsing_conv_dim, kernel_size=1, stride=1,
                           norm=make_norm(parsing_conv_dim, norm=norm), act=make_act())
             )
             self.dim_in = parsing_conv_dim
@@ -37,7 +37,7 @@ class QualityHead(nn.Module):
         parsing_layers = []
         for i in range(num_parsing_convs):
             parsing_layers.append(
-                make_conv(self.dim_in, parsing_conv_dim, kernel_size=3, stride=1, dilation=1,
+                make_conv(self.dim_in, parsing_conv_dim, kernel_size=1, stride=1,
                           norm=make_norm(parsing_conv_dim, norm=norm), act=make_act())
             )
             self.dim_in = parsing_conv_dim
