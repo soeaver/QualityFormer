@@ -23,7 +23,7 @@ class QualityEncoder(torch.nn.Module):
         drop_rate = cfg.PARSING.QEM.DROP_RATE
         self.q_dim = q_dim
 
-        self.feat_conv = make_conv(self.dim_in, q_dim, 1, 1, 0, norm=make_norm(q_dim, norm=norm), act=make_act())
+        self.feat_conv = make_conv(self.dim_in, q_dim, 3, 1, 1, norm=make_norm(q_dim, norm=norm), act=make_act())
         self.prob_conv = make_conv(num_parsing, q_dim, 1, 1, 0, norm=make_norm(q_dim, norm=norm), act=make_act())
         self.iou_conv = make_conv(1, q_dim, 1, 1, 0, norm=make_norm(q_dim, norm=norm), act=make_act())
 
