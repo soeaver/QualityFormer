@@ -835,6 +835,15 @@ _C.PARSING.LOSS_WEIGHT = 1.0
 # Lovasz loss weight for parsing
 _C.PARSING.LOVASZ_LOSS_WEIGHT = 0.0
 
+# Edge loss weight for parsing
+_C.PARSING.EDGE_LOSS_WEIGHT = 1.0
+
+# Use edge loss for Parsing head
+_C.PARSING.EDGE_ON = False
+
+# Edge width
+_C.PARSING.EDGE_WIDTH = 3
+
 # Use Parsing IoU for Parsing head
 _C.PARSING.PARSINGIOU_ON = False
 

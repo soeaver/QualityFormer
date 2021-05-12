@@ -13,7 +13,8 @@ class ParsingIoULossComputation(object):
         parsingiou_loss = l2_loss(parsingiou_pred[:, 0], parsingiou_gt)
         parsingiou_loss = self.loss_weight * parsingiou_loss
 
-        return parsingiou_loss
+        losses = {"loss_parsingiou": parsingiou_loss}
+        return losses
 
 
 def parsingiou_loss_evaluator(cfg):

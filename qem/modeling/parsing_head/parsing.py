@@ -64,12 +64,12 @@ class Parsing(torch.nn.Module):
 
         logits = self.Output(x)
 
-        loss_parsing, parsingiou_targets = self.loss_evaluator(logits, targets['parsing'])
-        losses.update(dict(loss_parsing=loss_parsing))
+        parsing_loss, parsingiou_targets = self.loss_evaluator(logits, targets['parsing'])
+        losses.update(parsing_loss)
 
         if self.parsingiou_on:
-            loss_parsingiou, _ = self.ParsingIoU(x, parsingiou_targets)
-            losses.update(dict(loss_parsingiou=loss_parsingiou))
+            parsingiou_losses, _ = self.ParsingIoU(x, parsingiou_targets)
+            losses.update(parsingiou_losses)
 
         return None, losses
 
@@ -85,7 +85,7 @@ class Parsing(torch.nn.Module):
 
         logits = self.Output(x)
 
-        output = F.softmax(logits[-1], dim=1)
+        output = F.softmax(logits[0], dim=1)
         results = dict(
             probs=output,
             parsing_iou_scores=torch.ones(output.size()[0], dtype=torch.float32, device=output.device)

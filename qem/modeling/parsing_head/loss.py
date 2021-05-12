@@ -19,16 +19,54 @@ def cal_one_mean_iou(image_array, label_array, num_parsing):
     return iu
 
 
+def prepare_edge_targets(parsing_targets, device, edge_width=3):
+    N, H, W = parsing_targets.shape
+    edge = torch.zeros(parsing_targets.shape).to(device, dtype=torch.float)
+
+    # right
+    edge_right = edge[:, 1:H, :]
+    edge_right[(parsing_targets[:, 1:H, :] != parsing_targets[:, :H - 1, :]) & (parsing_targets[:, 1:H, :] != 255) &
+               (parsing_targets[:, :H - 1, :] != 255)] = 1
+
+    # up
+    edge_up = edge[:, :, :W - 1]
+    edge_up[(parsing_targets[:, :, :W - 1] != parsing_targets[:, :, 1:W]) & (parsing_targets[:, :, :W - 1] != 255) &
+            (parsing_targets[:, :, 1:W] != 255)] = 1
+
+    # up-right
+    edge_upright = edge[:, :H - 1, :W - 1]
+    edge_upright[(parsing_targets[:, :H - 1, :W - 1] != parsing_targets[:, 1:H, 1:W])
+                 & (parsing_targets[:, :H - 1, :W - 1] != 255) & (parsing_targets[:, 1:H, 1:W] != 255)] = 1
+
+    # bottom-right
+    edge_bottomright = edge[:, :H - 1, 1:W]
+    edge_bottomright[(parsing_targets[:, :H - 1, 1:W] != parsing_targets[:, 1:H, :W - 1])
+                     & (parsing_targets[:, :H - 1, 1:W] != 255) & (parsing_targets[:, 1:H, :W - 1] != 255)] = 1
+
+    kernel = torch.ones((1, 1, edge_width, edge_width)).to(device, dtype=torch.float)
+    with torch.no_grad():
+        edge = edge.unsqueeze(1)
+        edge = F.conv2d(edge, kernel, stride=1, padding=1)
+    edge[edge != 0] = 1
+    edge = edge.squeeze()
+    return edge
+
+
 class ParsingLossComputation(object):
     def __init__(self, cfg):
         self.device = torch.device(cfg.DEVICE)
+        self.edge_on = cfg.PARSING.EDGE_ON
         self.parsingiou_on = cfg.PARSING.PARSINGIOU_ON
         self.num_parsing = cfg.PARSING.NUM_PARSING
         self.loss_weight = cfg.PARSING.LOSS_WEIGHT
         self.lovasz_loss_weight = cfg.PARSING.LOVASZ_LOSS_WEIGHT
+        self.edge_loss_weight = cfg.PARSING.EDGE_LOSS_WEIGHT
+        self.edge_width = cfg.PARSING.EDGE_WIDTH
 
     def __call__(self, logits, parsing_targets):
-        parsing_logits = logits[-1]
+        parsing_logits = logits[0]
+        losses = dict()
+
         if self.parsingiou_on:
             pred_parsings_np = parsing_logits.detach().argmax(dim=1).cpu().numpy()
             parsing_targets_np = parsing_targets.cpu().numpy()
@@ -44,15 +82,32 @@ class ParsingLossComputation(object):
             parsingiou_targets = None
 
         parsing_targets = parsing_targets.to(self.device)
-        parsing_loss = F.cross_entropy(parsing_logits, parsing_targets, reduction='mean')
+        parsing_loss = F.cross_entropy(parsing_logits, parsing_targets, reduction='mean', ignore_index=255)
         parsing_loss *= self.loss_weight
+        losses["loss_parsing"] = parsing_loss
 
         if self.lovasz_loss_weight:
             lovasz_loss = lovasz_softmax_loss(parsing_logits, parsing_targets)
             lovasz_loss *= self.lovasz_loss_weight
-            parsing_loss += lovasz_loss
+            losses["loss_lovasz"] = lovasz_loss
 
-        return parsing_loss, parsingiou_targets
+        if self.edge_on:
+            edge_logits = logits[-1]
+            edge_targets = prepare_edge_targets(parsing_targets, self.device, edge_width=self.edge_width)
+            edge_targets = edge_targets.to(self.device, dtype=torch.long)
+
+            pos_num = torch.sum(edge_targets == 1, dtype=torch.float)
+            neg_num = torch.sum(edge_targets == 0, dtype=torch.float)
+            weight_pos = neg_num / (pos_num + neg_num)
+            weight_neg = pos_num / (pos_num + neg_num)
+            weights = torch.tensor([weight_neg, weight_pos])  # edge loss weight
+            weights = weights.to(self.device)
+
+            edge_loss = F.cross_entropy(edge_logits, edge_targets, weight=weights, reduction='mean', ignore_index=255)
+            edge_loss *= self.edge_loss_weight
+            losses["loss_edge"] = edge_loss
+
+        return losses, parsingiou_targets
 
 
 def parsing_loss_evaluator(cfg):
