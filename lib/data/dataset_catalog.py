@@ -446,4 +446,124 @@ COMMON_DATASETS = {
              'seg_root': _DATA_DIR + '/LaPa/Testing/Category_ids',
              'label_shift': 0}
     },
+    'HRHP_private_train': {
+        _IM_DIR:
+            _DATA_DIR + '/HRHP/train/Images',
+        _ANN_FN:
+            _DATA_DIR + '/HRHP/annotations/HRHP_compact-box_private_train.json',
+        _FIELDS:
+            {'ann_types': ['bbox', 'mask', 'semseg', 'parsing'],
+             'ignore_label': 255,
+             'flip_map': ([14, 15], [16, 17], [18, 19]),
+             'seg_root': _DATA_DIR + '/HRHP/train/Category_ids',
+             'label_shift': 0}
+    },
+    'HRHP_private_val': {
+        _IM_DIR:
+            _DATA_DIR + '/HRHP/train/Images',
+        _ANN_FN:
+            _DATA_DIR + '/HRHP/annotations/HRHP_compact-box_private_val.json',
+        _FIELDS:
+            {'ann_types': ['bbox', 'mask', 'semseg', 'parsing'],
+             'ignore_label': 255,
+             'flip_map': ([14, 15], [16, 17], [18, 19]),
+             'seg_root': _DATA_DIR + '/HRHP/train/Category_ids',
+             'label_shift': 0}
+    },
+    'HRHP_train': {
+        _IM_DIR:
+            _DATA_DIR + '/HRHP/train/Images',
+        _ANN_FN:
+            _DATA_DIR + '/HRHP/annotations/HRHP_compact-box_train.json',
+        _FIELDS:
+            {'ann_types': ['bbox', 'mask', 'semseg', 'parsing'],
+             'ignore_label': 255,
+             'flip_map': ([14, 15], [16, 17], [18, 19]),
+             'seg_root': _DATA_DIR + '/HRHP/train/Category_ids',
+             'label_shift': 0}
+    },
+    'HRHP_val': {
+        _IM_DIR:
+            _DATA_DIR + '/HRHP/val/Images',
+        _ANN_FN:
+            _DATA_DIR + '/HRHP/annotations/HRHP_compact-box_val.json',
+        _FIELDS:
+            {'ann_types': ['bbox', 'mask', 'semseg', 'parsing'],
+             'ignore_label': 255,
+             'flip_map': ([14, 15], [16, 17], [18, 19]),
+             'seg_root': _DATA_DIR + '/HRHP/val/Category_ids',
+             'label_shift': 0}
+    },
+    'HRHP_test': {
+        _IM_DIR:
+            _DATA_DIR + '/HRHP/test/Images',
+        _ANN_FN:
+            _DATA_DIR + '/HRHP/annotations/HRHP_compact-box_test.json',
+        _FIELDS:
+            {'ann_types': ['bbox', 'mask', 'semseg', 'parsing'],
+             'ignore_label': 255,
+             'flip_map': ([14, 15], [16, 17], [18, 19]),
+             'seg_root': _DATA_DIR + '/HRHP/test/Category_ids',
+             'label_shift': 0}
+    },
+    'HRHP_private_val_small': {
+        _IM_DIR:
+            _DATA_DIR + '/HRHP/train_small/Images',
+        _ANN_FN:
+            _DATA_DIR + '/HRHP/annotations/HRHP_compact-box_private_val_small.json',
+        _FIELDS:
+            {'ann_types': ['bbox', 'mask', 'semseg', 'parsing'],
+             'ignore_label': 255,
+             'flip_map': ([14, 15], [16, 17], [18, 19]),
+             'seg_root': _DATA_DIR + '/HRHP/train_small/Category_ids',
+             'label_shift': 0}
+    },
+    'HRHP_val_small': {
+        _IM_DIR:
+            _DATA_DIR + '/HRHP/val_small/Images',
+        _ANN_FN:
+            _DATA_DIR + '/HRHP/annotations/HRHP_compact-box_val_small.json',
+        _FIELDS:
+            {'ann_types': ['bbox', 'mask', 'semseg', 'parsing'],
+             'ignore_label': 255,
+             'flip_map': ([14, 15], [16, 17], [18, 19]),
+             # 'seg_root': _DATA_DIR + '/HRHP/train_small/Category_ids',
+             'label_shift': 0}
+    },
+    'SFP_train': {
+        _IM_DIR:
+            _DATA_DIR + '/SFP/train/Images',
+        _ANN_FN:
+            _DATA_DIR + '/SFP/annotations/SFP_compact-box_train.json',
+        _FIELDS:
+            {'ann_types': ['bbox', 'mask', 'semseg', 'parsing'],
+             'ignore_label': 255,
+             'flip_map': ([2, 3], [4, 5], [11, 12], [13, 14]),
+             'seg_root': _DATA_DIR + '/SFP/train/Category_ids',
+             'label_shift': 0}
+    },
+    'SFP_val': {
+        _IM_DIR:
+            _DATA_DIR + '/SFP/val/Images',
+        _ANN_FN:
+            _DATA_DIR + '/SFP/annotations/SFP_compact-box_val.json',
+        _FIELDS:
+            {'ann_types': ['bbox', 'mask', 'semseg', 'parsing'],
+             'ignore_label': 255,
+             'flip_map': ([2, 3], [4, 5], [11, 12], [13, 14]),
+             'seg_root': _DATA_DIR + '/SFP/val/Category_ids',
+             'label_shift': 0}
+    },
+    'SFP_test': {
+        _IM_DIR:
+            _DATA_DIR + '/SFP/test/Images',
+        _ANN_FN:
+            _DATA_DIR + '/SFP/annotations/SFP_compact-box_test.json',
+        _FIELDS:
+            {'ann_types': ['bbox', 'mask', 'semseg', 'parsing'],
+             'ignore_label': 255,
+             'flip_map': ([2, 3], [4, 5], [11, 12], [13, 14]),
+             # 'seg_root': _DATA_DIR + '/SFP/test/Category_ids',
+             'label_shift': 0}
+    },
 }
