@@ -1,30 +1,30 @@
 # News
-- Pytorch official code of QANet-imprv is opened. (01/16/2020)
+- Pytorch official code of QEM is opened. (01/16/2020)
 - Pytorch official code of QANet is released. (01/11/2020)
 
 
 # Introduction
-Official implementation of **Quality-Aware Network for Instance-Level Dense Prediction**
+Official implementation of **Quality Enhancement Network for Instance-Level Dense Prediction**
 
-In this repository, we release the QANet-imprv code in Pytorch.
+In this repository, we release the QEM code in Pytorch.
 
-- QANet architecture:
-<p align="center"><img width="90%" src="docs/qanet.png" /></p>
+- QEM architecture:
+<p align="center"><img width="90%" src="docs/qem.png" /></p>
 
 
-## Citing QANet
+## Citing QANet & QEM
 
-If you use QANet, please use the following BibTeX entry.
+If you use QANet & QEM, please use the following BibTeX entry.
 
 ```BibTeX
-@inproceedings{yang2020qanet,
+@inproceedings{yang2021qanet,
   title = {Quality-Aware Network for Human Parsing},
   author = {Lu Yang and Qing Song and Zhihui Wang and Zhiwei Liu and Songcen Xu and Zhihao Li},
-  booktitle = {arXiv preprint arXiv:20xx.xxxxx},
+  booktitle = {arXiv preprint arXiv:2103.05997},
   year = {2020}
 }
 
-@inproceedings{yang2021qanet-imprv,
+@inproceedings{yang2021qem,
   title = {Quality-Aware Network for Instance-Level Dense Prediction},
   author = {Lu Yang and Qing Song and Zhihui Wang and Zhiwei Liu and Songcen Xu and Zhihao Li},
   booktitle = {arXiv preprint arXiv:21xx.xxxxx},
