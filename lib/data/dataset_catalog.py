@@ -13,31 +13,6 @@ _FIELDS = 'extra_fields'
 
 # Available datasets
 COMMON_DATASETS = {
-    'cityscapes_fine_instanceonly_seg_train': {
-        _IM_DIR:
-            _DATA_DIR + '/CityScape/images',
-        _ANN_FN:
-            _DATA_DIR + '/CityScape/annotations/instancesonly_filtered_gtFine_train.json',
-        _FIELDS:
-            {'ann_types': ['bbox', 'mask', 'semseg']}
-    },
-    'cityscapes_fine_instanceonly_seg_val': {
-        _IM_DIR:
-            _DATA_DIR + '/CityScape/images',
-        # use filtered validation as there is an issue converting contours
-        _ANN_FN:
-            _DATA_DIR + '/CityScape/annotations/instancesonly_filtered_gtFine_val.json',
-        _FIELDS:
-            {'ann_types': ['bbox', 'mask', 'semseg']}
-    },
-    'cityscapes_fine_instanceonly_seg_test': {
-        _IM_DIR:
-            _DATA_DIR + '/CityScape/images',
-        _ANN_FN:
-            _DATA_DIR + '/CityScape/annotations/instancesonly_filtered_gtFine_test.json',
-        _FIELDS:
-            {'ann_types': ['bbox', 'mask', 'semseg']}
-    },
     'coco_2017_train': {
         _IM_DIR:
             _DATA_DIR + '/COCO/images/train2017',
@@ -85,22 +60,6 @@ COMMON_DATASETS = {
             _DATA_DIR + '/COCO/annotations/lvis/lvis_v0.5_val_cocofied.json',
         _FIELDS:
             {'ann_types': ['bbox', 'mask']}
-    },
-    'coco_stuff_train': {
-        _IM_DIR:
-            _DATA_DIR + '/COCO/images/train2014',
-        _ANN_FN:
-            _DATA_DIR + '/COCO/annotations/stuff_train.json',
-        _FIELDS:
-            {'ann_types': ['semseg']}
-    },
-    'coco_stuff_val': {
-        _IM_DIR:
-            _DATA_DIR + '/COCO/images/val2014',
-        _ANN_FN:
-            _DATA_DIR + '/COCO/annotations/stuff_val.json',
-        _FIELDS:
-            {'ann_types': ['semseg']}
     },
     'keypoints_coco_2017_train': {
         _IM_DIR:
@@ -446,30 +405,6 @@ COMMON_DATASETS = {
              'seg_root': _DATA_DIR + '/LaPa/Testing/Category_ids',
              'label_shift': 0}
     },
-    'HRHP_private_train': {
-        _IM_DIR:
-            _DATA_DIR + '/HRHP/train/Images',
-        _ANN_FN:
-            _DATA_DIR + '/HRHP/annotations/HRHP_compact-box_private_train.json',
-        _FIELDS:
-            {'ann_types': ['bbox', 'mask', 'semseg', 'parsing'],
-             'ignore_label': 255,
-             'flip_map': ([14, 15], [16, 17], [18, 19]),
-             'seg_root': _DATA_DIR + '/HRHP/train/Category_ids',
-             'label_shift': 0}
-    },
-    'HRHP_private_val': {
-        _IM_DIR:
-            _DATA_DIR + '/HRHP/train/Images',
-        _ANN_FN:
-            _DATA_DIR + '/HRHP/annotations/HRHP_compact-box_private_val.json',
-        _FIELDS:
-            {'ann_types': ['bbox', 'mask', 'semseg', 'parsing'],
-             'ignore_label': 255,
-             'flip_map': ([14, 15], [16, 17], [18, 19]),
-             'seg_root': _DATA_DIR + '/HRHP/train/Category_ids',
-             'label_shift': 0}
-    },
     'HRHP_train': {
         _IM_DIR:
             _DATA_DIR + '/HRHP/train/Images',
@@ -491,7 +426,7 @@ COMMON_DATASETS = {
             {'ann_types': ['bbox', 'mask', 'semseg', 'parsing'],
              'ignore_label': 255,
              'flip_map': ([14, 15], [16, 17], [18, 19]),
-             'seg_root': _DATA_DIR + '/HRHP/val/Category_ids',
+             # 'seg_root': _DATA_DIR + '/HRHP/val/Category_ids',
              'label_shift': 0}
     },
     'HRHP_test': {
@@ -503,19 +438,7 @@ COMMON_DATASETS = {
             {'ann_types': ['bbox', 'mask', 'semseg', 'parsing'],
              'ignore_label': 255,
              'flip_map': ([14, 15], [16, 17], [18, 19]),
-             'seg_root': _DATA_DIR + '/HRHP/test/Category_ids',
-             'label_shift': 0}
-    },
-    'HRHP_private_val_small': {
-        _IM_DIR:
-            _DATA_DIR + '/HRHP/train_small/Images',
-        _ANN_FN:
-            _DATA_DIR + '/HRHP/annotations/HRHP_compact-box_private_val_small.json',
-        _FIELDS:
-            {'ann_types': ['bbox', 'mask', 'semseg', 'parsing'],
-             'ignore_label': 255,
-             'flip_map': ([14, 15], [16, 17], [18, 19]),
-             'seg_root': _DATA_DIR + '/HRHP/train_small/Category_ids',
+             # 'seg_root': _DATA_DIR + '/HRHP/test/Category_ids',
              'label_shift': 0}
     },
     'HRHP_val_small': {
@@ -527,7 +450,19 @@ COMMON_DATASETS = {
             {'ann_types': ['bbox', 'mask', 'semseg', 'parsing'],
              'ignore_label': 255,
              'flip_map': ([14, 15], [16, 17], [18, 19]),
-             # 'seg_root': _DATA_DIR + '/HRHP/train_small/Category_ids',
+             # 'seg_root': _DATA_DIR + '/HRHP/val_small/Category_ids',
+             'label_shift': 0}
+    },
+    'HRHP_test_small': {
+        _IM_DIR:
+            _DATA_DIR + '/HRHP/test_small/Images',
+        _ANN_FN:
+            _DATA_DIR + '/HRHP/annotations/HRHP_compact-box_test_small.json',
+        _FIELDS:
+            {'ann_types': ['bbox', 'mask', 'semseg', 'parsing'],
+             'ignore_label': 255,
+             'flip_map': ([14, 15], [16, 17], [18, 19]),
+             # 'seg_root': _DATA_DIR + '/HRHP/v/Category_ids',
              'label_shift': 0}
     },
     'SFP_train': {
