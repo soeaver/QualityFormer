@@ -70,13 +70,9 @@ class COCOInstanceDataset(data.Dataset):
             entry = self.coco.loadImgs(img_id)[0]
             for obj in ann:
                 if has_valid_annotation(obj, entry):
-                    if 'keypoints' in self.ann_types or 'parsing' in self.ann_types or 'uv' in self.ann_types:
+                    if 'parsing' in self.ann_types:
                         if not has_valid_person(obj):
                             continue
-                    if 'keypoints' in self.ann_types and not has_valid_keypoint(obj):
-                        continue
-                    if 'uv' in self.ann_types and not has_valid_densepose(obj):
-                        continue
                     self.ids.append(img_id)
                     self.ann_ids.append(obj['id'])
         logging_rank('Load {} samples'.format(len(ids)))
@@ -99,17 +95,8 @@ class COCOInstanceDataset(data.Dataset):
         img_path = os.path.join(self.root, file_name)
         box = ann['bbox']
         instance = {}
-        if 'mask' in self.ann_types:
-            if isinstance(ann['segmentation'], list):
-                instance['mask'] = ann['segmentation']
-            else:
-                instance['mask'] = os.path.join(self.root.replace('images', 'masks'), ann['segmentation'])
-        if 'keypoints' in self.ann_types:
-            instance['keypoints'] = ann['keypoints']
         if 'parsing' in self.ann_types:
             instance['parsing'] = [self.root, file_name, ann['parsing_id']]
-        if 'uv' in self.ann_types:
-            instance['uv'] = [ann['dp_x'], ann['dp_y'], ann['dp_I'], ann['dp_U'], ann['dp_V'], ann['dp_masks']]
         classes = self.json_category_id_to_contiguous_id[ann["category_id"]]
 
         img = np.asarray(Image.open(img_path).convert('RGB'))

@@ -18,6 +18,7 @@ from lib.utils.misc import logging_rank, mkdir_p, setup_logging
 from lib.utils.net import mismatch_params_filter
 from lib.utils.optimizer import Optimizer
 from lib.utils.timer import Timer
+from lib.utils.wandb_writer import WandbLogger
 
 from qem.core.config import get_cfg, infer_cfg
 from qem.core.test import TestEngine
@@ -27,7 +28,7 @@ from qem.modeling.model_builder import Generalized_CNN
 
 
 def train(cfg, model, sampler, train_loader, test_loader, test_set, test_engine,
-          optimizer, scheduler, scaler, checkpointer, all_hooks):
+          optimizer, scheduler, scaler, checkpointer, all_hooks, logger=None):
     # switch to train mode
     model.train()
     iter_per_epoch = len(train_loader)
@@ -40,7 +41,10 @@ def train(cfg, model, sampler, train_loader, test_loader, test_set, test_engine,
                 h.before_train()
 
             for epoch in range(start_epoch, cfg.SOLVER.MAX_EPOCHS + 1):
+                if logger is not None:
+                    logger.set_step((epoch - 1) * iter_per_epoch)
                 logging_rank("Starting training from epoch {}".format(epoch))
+
                 sampler.set_epoch(epoch)
                 iter_loader = iter(enumerate(train_loader, start_iter))
                 for iteration in range(0, iter_per_epoch):
@@ -62,6 +66,12 @@ def train(cfg, model, sampler, train_loader, test_loader, test_set, test_engine,
                     metrics_dict["data_time"] = data_time
                     metrics_dict["best_acc1"] = scheduler.info['best_acc']
                     write_metrics(metrics_dict, storage)
+
+                    if logger is not None:
+                        tgt_stats = {'epoch': epoch, 'total_loss': losses}
+                        for k in outputs['losses'].keys():
+                            tgt_stats[k] = outputs['losses'][k]
+                        logger.update(tgt_stats)
 
                     scaler.scale(losses).backward()
                     scaler.step(optimizer)
@@ -146,6 +156,12 @@ def main(args):
     cfg.freeze()
     # logging_rank(cfg)
 
+    # setup wandb
+    if args.local_rank == 0 and cfg.WANDB.ENABLED:
+        wandb_writer = WandbLogger(cfg)
+    else:
+        wandb_writer = None
+
     if not os.path.isdir(cfg.CKPT):
         mkdir_p(cfg.CKPT)
     setup_logging(cfg.CKPT)
@@ -214,7 +230,7 @@ def main(args):
     distributed = get_world_size() > 1
     if distributed:
         model = torch.nn.parallel.DistributedDataParallel(
-            model, device_ids=[args.local_rank], output_device=args.local_rank
+            model, device_ids=[args.local_rank], output_device=args.local_rank, find_unused_parameters=True
         )
 
     # Create Amp for mixed precision training
@@ -228,7 +244,7 @@ def main(args):
 
     # Train
     train(cfg, model, train_sampler, train_loader, test_loader, test_set, test_engine,
-          optimizer, scheduler, scaler, checkpointer, all_hooks)
+          optimizer, scheduler, scaler, checkpointer, all_hooks, logger=wandb_writer)
 
 
 if __name__ == '__main__':

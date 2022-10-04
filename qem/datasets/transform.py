@@ -3,10 +3,6 @@ from lib.data.transforms import transforms as T
 
 def build_transforms(cfg, is_train=True):
     image_format = cfg.IMAGE_FORMAT
-    # keypoints prob map
-    target_type = cfg.KEYPOINT.TARGET_TYPE
-    sigma = cfg.KEYPOINT.SIGMA
-    prob_size = cfg.KEYPOINT.PROB_SIZE
 
     # normalize
     pixel_mean = cfg.PIXEL_MEANS
@@ -23,19 +19,9 @@ def build_transforms(cfg, is_train=True):
         rotation_factor = cfg.TRAIN.ROT_FACTOR
         flip = cfg.TRAIN.USE_FLIPPED
 
-        # MSPN halfbody
-        use_half_body = cfg.TRAIN.USE_HALF_BODY
-        prob_half_body = cfg.TRAIN.PRO_HALF_BODY
-        num_half_body = cfg.TRAIN.NUM_HALF_BODY
-        upper_body_ids = cfg.TRAIN.UPPER_BODY_IDS
-        x_ext_half_body = cfg.TRAIN.X_EXT_HALF_BODY
-        y_ext_half_body = cfg.TRAIN.Y_EXT_HALF_BODY
-
         transform = T.Compose(
             [
                 T.Convert(aspect_ratio, train_max_size),
-                T.HalfBody(use_half_body, num_half_body, prob_half_body, upper_body_ids,
-                           x_ext_half_body, y_ext_half_body),
                 T.Scale(scale_factor),
                 T.Rotate(rotation_factor),
                 T.Flip(flip),
@@ -43,7 +29,6 @@ def build_transforms(cfg, is_train=True):
                 T.ToTensor(),
                 T.CropAndResize(train_size, train_affine_mode),
                 T.Normalize(pixel_mean, pixel_std, mode=image_format),
-                T.GenerateTarget(target_type, sigma, prob_size, train_size),
             ]
         )
 

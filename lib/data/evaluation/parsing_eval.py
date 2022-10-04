@@ -570,7 +570,7 @@ class Params:
 
 def generate_parsing_result(parsings, instance_scores, part_scores, bbox_scores=None, semseg=None, img_info=None,
                             output_folder=None, score_thresh=0.05, semseg_thresh=0.3, parsing_nms_thres=1.0,
-                            num_parsing=20):
+                            num_parsing=20, hcm=None):
     parsings = np.asarray(parsings)
     instance_scores = np.asarray(instance_scores)
     part_scores = np.asarray(part_scores)
@@ -584,6 +584,9 @@ def generate_parsing_result(parsings, instance_scores, part_scores, bbox_scores=
     ins_parsing_dir = os.path.join(output_folder, 'instance_parsing')
     if not os.path.exists(ins_parsing_dir):
         os.makedirs(ins_parsing_dir)
+    hcm_dir = os.path.join(output_folder, 'hcm')
+    if not os.path.exists(hcm_dir):
+        os.makedirs(hcm_dir)
 
     im_name = img_info['file_name']
     if '/' in im_name:
@@ -604,6 +607,7 @@ def generate_parsing_result(parsings, instance_scores, part_scores, bbox_scores=
     save_global_parsing = os.path.join(global_parsing_dir, im_name.replace('jpg', 'png'))
     save_ins_semseg = os.path.join(ins_semseg_dir, im_name.replace('jpg', 'png'))
     save_ins_parsing = os.path.join(ins_parsing_dir, im_name.replace('jpg', 'png'))
+    save_hcm = os.path.join(hcm_dir, im_name.replace('jpg', 'png'))
 
     if semseg is not None:
         semseg = cv2.resize(semseg, (img_info["width"], img_info["height"]), interpolation=cv2.INTER_LINEAR)
@@ -680,6 +684,7 @@ def generate_parsing_result(parsings, instance_scores, part_scores, bbox_scores=
     cv2.imwrite(save_global_parsing, global_parsing.astype(np.uint8))
     cv2.imwrite(save_ins_semseg, reindex_ins_semseg.astype(np.uint8))
     cv2.imwrite(save_ins_parsing, ins_parsing.astype(np.uint8))
+    cv2.imwrite(save_hcm, hcm)
     is_wfp.close()
     ip_wfp.close()
 

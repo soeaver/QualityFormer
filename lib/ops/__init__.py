@@ -5,6 +5,7 @@ from .conv2d_ws import Conv2dWS
 from .deform_conv import DeformConv, DeformConvPack, ModulatedDeformConv, ModulatedDeformConvPack
 from .dice_loss import DICELoss
 from .dropblock import DropBlock2D
+from .droppath import DropPath, drop_path
 from .dyrelu import DyReLUA, DyReLUB
 from .efficient_channel_attention import ECA
 from .equalization_loss import equalization_loss

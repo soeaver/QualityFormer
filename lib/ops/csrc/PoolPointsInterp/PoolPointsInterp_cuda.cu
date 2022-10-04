@@ -3,6 +3,10 @@
 #include <c10/cuda/CUDAGuard.h>
 #include <ATen/cuda/CUDAApplyUtils.cuh>
 
+#ifndef THCudaCheck
+#define THCudaCheck TORCH_CHECK
+#endif
+
 // TODO make it in a common file
 #define CUDA_1D_KERNEL_LOOP(i, n)                            \
   for (int i = blockIdx.x * blockDim.x + threadIdx.x; i < n; \

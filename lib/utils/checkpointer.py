@@ -89,7 +89,13 @@ class CheckPointer(object):
             logging_rank('Resuming from weights: {}.'.format(self.weights_path))
         else:
             if self.weights_path:
-                weights_dict = self.checkpoint if not self.retrain else self.checkpoint.pop('model')
+                if not self.retrain:
+                    try:
+                        weights_dict = self.checkpoint.pop('model')
+                    except:
+                        weights_dict = self.checkpoint
+                else:
+                    weights_dict = self.checkpoint.pop('model')
                 weights_dict = strip_prefix_if_present(weights_dict, prefix='module.')
                 weights_dict = self.weight_mapping(weights_dict)    # only for pre-training
                 if convert_conv1:   # only for pre-training

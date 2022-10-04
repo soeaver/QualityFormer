@@ -1,4 +1,5 @@
 import numpy as np
+import cv2
 
 import torch
 from torch.nn import functional as F
@@ -106,6 +107,8 @@ def get_parsing_results(cfg, probs, targets):
 
     # high confidence mask (hcm)
     inst_hcm = (inst_max >= cfg.PARSING.PIXEL_SCORE_TH).to(dtype=torch.bool)
+    hcm = (inst_max >= 0.95).to(dtype=torch.bool)
+    hcm = hcm.cpu().numpy().astype(np.uint8) * 255
     # high confidence value (hcv)
     inst_hcv = torch.sum(inst_max * inst_hcm, dim=[1, 2]).to(dtype=torch.float32)
     inst_hcm_num = torch.clamp(torch.sum(inst_hcm, dim=[1, 2]).to(dtype=torch.float32), min=1e-6)
@@ -130,4 +133,4 @@ def get_parsing_results(cfg, probs, targets):
     category_pixel_scores = category_pixel_scores.split(boxes_per_image, dim=0)
     category_pixel_scores = [_.cpu() for _ in category_pixel_scores]
 
-    return ims_parsings, instance_pixel_scores, category_pixel_scores
+    return ims_parsings, instance_pixel_scores, category_pixel_scores, hcm

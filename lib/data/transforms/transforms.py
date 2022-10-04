@@ -478,32 +478,3 @@ class CropAndResize(object):
             image = roi_align_rotated(image[None], rois, (self.size[1], self.size[0]), 1.0, 0, True)[0]
 
         return image, target
-
-
-class HalfBody(object):
-    def __init__(self, use_half_body, num_half_body, prob_half_body, upper_body_ids,
-                 x_ext_half_body, y_ext_half_body):
-        self.use_half_body = use_half_body
-        self.num_half_body = num_half_body
-        self.prob_half_body = prob_half_body
-        self.upper_body_ids = upper_body_ids
-        self.x_ext_half_body = x_ext_half_body
-        self.y_ext_half_body = y_ext_half_body
-
-    def __call__(self, image, target):
-        if self.use_half_body and np.random.rand() <= self.prob_half_body:
-            target.half_body(self.num_half_body, self.upper_body_ids, self.x_ext_half_body,
-                             self.y_ext_half_body)
-        return image, target
-
-
-class GenerateTarget(object):
-    def __init__(self, target_type, sigma, prob_size, size):
-        self.target_type = target_type
-        self.sigma = sigma
-        self.prob_size = prob_size
-        self.size = size
-
-    def __call__(self, image, target):
-        final_target = target.generate_target(self.target_type, self.sigma, self.prob_size, self.size)
-        return image, final_target

@@ -30,7 +30,7 @@ _C.PIXEL_STDS = [1.0, 1.0, 1.0]
 _C.CLEAN_UP = True
 
 # Set True to enable model analysis
-_C.MODEL_ANALYSE = True
+_C.MODEL_ANALYSE = False
 
 # Directory for saving checkpoints and loggers
 _C.CKPT = 'ckpts/CIHP/QANet/QANet_R-50c_512x384_1x/QANet_R-50c_512x384_1x.yaml'
@@ -113,8 +113,16 @@ _C.SOLVER.WEIGHT_DECAY = 0.0001
 # L2 regularization hyperparameter for all Normalization parameters
 _C.SOLVER.WEIGHT_DECAY_NORM = 0.0
 
+# L2 regularization hyperparameter for all Embedding parameters
+_C.SOLVER.WEIGHT_DECAY_EMBED = 0.0
+
+# L2 regularization hyperparameter factor for backbone
+_C.SOLVER.BACKBONE_WEIGHT_DECAY_FACTOR = 1.0
+
 # Adjust the parameters for bias
 # TODO: whether keep same with R-CNN
+# Adjust the LR parameters for backbone
+_C.SOLVER.BACKBONE_LR_FACTOR = 1.0
 _C.SOLVER.BIAS_LR_FACTOR = 2.0
 _C.SOLVER.WEIGHT_DECAY_BIAS = 0.0
 
@@ -150,6 +158,27 @@ _C.SOLVER.LOG_LR_CHANGE_THRESHOLD = 1.1
 
 # Snapshot (model checkpoint) period
 _C.SOLVER.SNAPSHOT_EPOCHS = -1
+
+# --------------------------------------------------------------------------- #
+# SOLVER.CLIP_GRADIENTS options
+# --------------------------------------------------------------------------- #
+_C.SOLVER.CLIP_GRADIENTS = CN()
+
+_C.SOLVER.CLIP_GRADIENTS.ENABLED = False
+
+# Type of gradient clipping, currently 3 values are supported:
+# - "full_model": full model gradient clipping
+# - "value": the absolute values of elements of each gradients are clipped
+# - "norm": the norm of the gradient for each parameter is clipped thus
+#   affecting all elements in the parameter
+_C.SOLVER.CLIP_GRADIENTS.CLIP_TYPE = "value"
+
+# Maximum absolute value used for clipping gradients
+_C.SOLVER.CLIP_GRADIENTS.CLIP_VALUE = 1.0
+
+# Floating point number p for L-p norm to be used with the "norm"
+# gradient clipping type; for L-inf, please specify .inf
+_C.SOLVER.CLIP_GRADIENTS.NORM_TYPE = 2.0
 
 # ---------------------------------------------------------------------------- #
 # Automatic mixed precision options (during training)
@@ -242,30 +271,6 @@ _C.TRAIN.ROT_FACTOR = 40
 
 # Use horizontally-flipped images during training?
 _C.TRAIN.USE_FLIPPED = True
-
-# Use half body data augmentation during training?
-_C.TRAIN.USE_HALF_BODY = False
-
-# Probability of using half body aug
-_C.TRAIN.PRO_HALF_BODY = 0.3
-
-# X of using half body aug
-_C.TRAIN.X_EXT_HALF_BODY = 0.6
-
-# Y of using half body aug
-_C.TRAIN.Y_EXT_HALF_BODY = 0.8
-
-# Num parts for using half body aug
-_C.TRAIN.NUM_HALF_BODY = 3
-
-# Upper body ids for half body aug
-# (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12) for COCO keypoint
-# (1, 2, 3, 4, 5, 6, 7, 10, 11, 13, 14, 15) for CIHP parsing
-_C.TRAIN.UPPER_BODY_IDS = (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12)
-
-_C.TRAIN.SELECT_DATA = False   # TODO
-
-_C.TRAIN.CALC_ACC = False   # TODO
 
 # Training will resume from the latest snapshot (model checkpoint) found in the
 # output directory
@@ -395,42 +400,6 @@ _C.BACKBONE.HRNET.NORM = 'BN'
 # Type of context module in each block
 # E.g., 'SE', 'GCB', ...
 _C.BACKBONE.HRNET.STAGE_WITH_CTX = ("", "", "", "")
-
-# ---------------------------------------------------------------------------- #
-# MobileNet V1 options
-# ---------------------------------------------------------------------------- #
-_C.BACKBONE.MV1 = CN()
-
-# The number of layers in each block
-_C.BACKBONE.MV1.LAYERS = (2, 2, 6, 2)
-
-# The initial width of each block
-_C.BACKBONE.MV1.NUM_CHANNELS = [32, 64, 128, 256, 512, 1024]
-
-# Kernel size of depth-wise separable convolution layers
-_C.BACKBONE.MV1.KERNEL = 3
-
-# Network widen factor
-_C.BACKBONE.MV1.WIDEN_FACTOR = 1.0
-
-# Use dropblock in C4 and C5
-_C.BACKBONE.MV1.USE_DP = False
-
-# Type of normalization
-# E.g., 'FrozenBN', 'BN', 'SyncBN', 'GN', 'MixBN', 'MixGN', ...
-_C.BACKBONE.MV1.NORM = 'BN'
-
-# ---------------------------------------------------------------------------- #
-# MobileNet V2 options
-# ---------------------------------------------------------------------------- #
-_C.BACKBONE.MV2 = CN()
-
-# Network widen factor
-_C.BACKBONE.MV2.WIDEN_FACTOR = 1.0
-
-# Type of normalization
-# E.g., 'FrozenBN', 'BN', 'SyncBN', 'GN', 'MixBN', 'MixGN', ...
-_C.BACKBONE.MV2.NORM = 'BN'
 
 # ---------------------------------------------------------------------------- #
 # MobileNet V3 options
@@ -567,6 +536,60 @@ _C.BACKBONE.RESNEXT.NORM = 'BN'
 # E.g., 'SE', 'GCB', ...
 _C.BACKBONE.RESNEXT.STAGE_WITH_CTX = ("", "", "", "")
 
+# --------------------------------------------------------------------------- #
+# Swin options
+# --------------------------------------------------------------------------- #
+_C.BACKBONE.SWIN = CN()
+
+# Input size
+_C.BACKBONE.SWIN.INPUT_SIZE = (224, 224, 3)
+
+# Patch size
+_C.BACKBONE.SWIN.PATCH_SIZE = (4, 4)
+
+# Embed dim
+_C.BACKBONE.SWIN.EMBED_DIM = 96
+
+# Depth
+_C.BACKBONE.SWIN.DEPTHS = (2, 2, 6, 2)
+
+# Num head
+_C.BACKBONE.SWIN.NUM_HEADS = (3, 6, 12, 24)
+
+# MLP ratios
+_C.BACKBONE.SWIN.MLP_RATIOS = (4.0, 4.0, 4.0, 4.0)
+
+# Window size
+_C.BACKBONE.SWIN.WINDOW_SIZE = 7
+
+# QKV bias
+_C.BACKBONE.SWIN.QKV_BIAS = False
+
+# QK scale
+_C.BACKBONE.SWIN.QK_SCALE = None
+
+# Absolute position embedding
+_C.BACKBONE.SWIN.APE = False
+
+# The drop out rate for network training
+_C.BACKBONE.SWIN.DROP_RATE = 0.0
+
+# The drop out rate of stoch. depth for network training
+_C.BACKBONE.SWIN.DROP_PATH = 0.1
+
+# Type of normalization
+# E.g., 'FrozenBN', 'BN', 'SyncBN', 'GN', 'MixBN', 'MixGN', ...
+_C.BACKBONE.SWIN.NORM = "LN"
+
+# Activation
+_C.BACKBONE.SWIN.ACT = "GELU"
+
+# Whether to use checkpointing to save memory
+_C.BACKBONE.SWIN.USE_CKPT = False
+
+# The eps of batch_norm layer
+_C.BACKBONE.SWIN.BN_EPS = 1e-6
+
 
 # ---------------------------------------------------------------------------- #
 # FPN options
@@ -656,162 +679,6 @@ _C.FPN.LATENC.NORM = ""
 
 
 # ---------------------------------------------------------------------------- #
-# Mask options
-# ---------------------------------------------------------------------------- #
-_C.MASK = CN()
-
-# The head of model to use
-# (e.g., 'simple_none_head', 'gce')
-_C.MASK.MASK_HEAD = 'simple_none_head'
-
-# Output module of mask head
-_C.MASK.MASK_OUTPUT = 'conv1x1_outputs'
-
-# Output module of mask loss
-_C.MASK.MASK_LOSS = 'mask_loss'
-
-# Mask Number for mask estimation
-_C.MASK.NUM_CLASSES = 81
-
-# Loss weight for mask
-_C.MASK.LOSS_WEIGHT = 1.0
-
-# Use Mask IoU for mask head
-_C.MASK.MASKIOU_ON = False
-
-# Weights for calculating quality score (bbox_scores, iou_scores, pixel_scores)
-_C.MASK.QUALITY_WEIGHTS = (1.0, 1.0, 0.0)
-
-# Threshold of mask prob to calculate pixel score
-_C.MASK.PIXEL_SCORE_TH = 0.25
-
-# ---------------------------------------------------------------------------- #
-# Mask gce head options
-# ---------------------------------------------------------------------------- #
-_C.MASK.GCE_HEAD = CN()
-
-# Hidden Conv layer dimension
-_C.MASK.GCE_HEAD.CONV_DIM = 512
-
-# Dimension for ASPP
-_C.MASK.GCE_HEAD.ASPP_DIM = 256
-
-# Dilation for ASPP
-_C.MASK.GCE_HEAD.ASPP_DILATION = (6, 12, 18)
-
-# Number of stacked Conv layers in GCE head before
-_C.MASK.GCE_HEAD.NUM_CONVS_BEFORE_ASPP = 0
-
-# Number of stacked Conv layers in GCE head after
-_C.MASK.GCE_HEAD.NUM_CONVS_AFTER_ASPP = 0
-
-# Use NonLocal in the Keypoint gce head
-_C.MASK.GCE_HEAD.USE_NL = False
-
-# Reduction ration of nonlocal
-_C.MASK.GCE_HEAD.NL_RATIO = 1.0
-
-# Type of normalization in the PARSING gce head
-# E.g., 'FrozenBN', 'BN', 'SyncBN', 'GN', 'MixBN', 'MixGN', ...
-_C.MASK.GCE_HEAD.NORM = ""
-
-# ---------------------------------------------------------------------------- #
-# Mask IoU options
-# ---------------------------------------------------------------------------- #
-_C.MASK.MASKIOU = CN()
-
-# The head of Mask IoU to use
-# (e.g., "convx_head")
-_C.MASK.MASKIOU.MASKIOU_HEAD = "maskiou_head"
-
-# Output module of Mask IoU head
-_C.MASK.MASKIOU.MASKIOU_OUTPUT = "maskiou_output"
-
-# Number of stacked Conv layers in Mask IoU head
-_C.MASK.MASKIOU.NUM_CONVS = 2
-
-# Hidden Conv layer dimension of Mask IoU head
-_C.MASK.MASKIOU.CONV_DIM = 512
-
-# Type of normalization in the MASK IoU head
-# E.g., 'FrozenBN', 'BN', 'SyncBN', 'GN', 'MixBN', 'MixGN', ...
-_C.MASK.MASKIOU.NORM = ""
-
-# Loss weight for Mask IoU head
-_C.MASK.MASKIOU.LOSS_WEIGHT = 1.0
-
-
-# ---------------------------------------------------------------------------- #
-# Keypoint options
-# ---------------------------------------------------------------------------- #
-_C.KEYPOINT = CN()
-
-# The head of model to use
-# (e.g., 'simple_none_head', 'gce')
-_C.KEYPOINT.KEYPOINT_HEAD = 'simple_none_head'
-
-# Output module of keypoint head
-_C.KEYPOINT.KEYPOINT_OUTPUT = 'conv1x1_outputs'
-
-# Use target weight during training
-_C.KEYPOINT.USE_TARGET_WEIGHT = True
-
-# Keypoints Number for keypoint estimation
-_C.KEYPOINT.NUM_KEYPOINTS = 17
-
-# Soft target type
-_C.KEYPOINT.TARGET_TYPE = 'gaussian'
-
-# Usually 1 / 4. size of input
-_C.KEYPOINT.PROB_SIZE = (48, 64)
-
-# Sigma
-_C.KEYPOINT.SIGMA = 2
-
-# OKS score threshold for testing
-_C.KEYPOINT.OKS_THRESH = 0.9
-
-# Index thresh
-_C.KEYPOINT.INDEX_THRESH = 0.2
-
-# Loss weight for keypoint
-_C.KEYPOINT.LOSS_WEIGHT = 1.0
-
-# Weights for calculating quality score (bbox_scores, iou_scores, pixel_scores)
-_C.KEYPOINT.QUALITY_WEIGHTS = (1.0, 1.0, 0.0)
-
-# ---------------------------------------------------------------------------- #
-# Keypoint gce head options
-# ---------------------------------------------------------------------------- #
-_C.KEYPOINT.GCE_HEAD = CN()
-
-# Hidden Conv layer dimension
-_C.KEYPOINT.GCE_HEAD.CONV_DIM = 512
-
-# Dimension for ASPP
-_C.KEYPOINT.GCE_HEAD.ASPP_DIM = 256
-
-# Dilation for ASPP
-_C.KEYPOINT.GCE_HEAD.ASPP_DILATION = (6, 12, 18)
-
-# Number of stacked Conv layers in GCE head before 
-_C.KEYPOINT.GCE_HEAD.NUM_CONVS_BEFORE_ASPP = 0
-
-# Number of stacked Conv layers in GCE head after 
-_C.KEYPOINT.GCE_HEAD.NUM_CONVS_AFTER_ASPP = 0
-
-# Use NonLocal in the Keypoint gce head
-_C.KEYPOINT.GCE_HEAD.USE_NL = False
-
-# Reduction ration of nonlocal
-_C.KEYPOINT.GCE_HEAD.NL_RATIO = 1.0
-
-# Type of normalization in the KEYPOINT gce head
-# E.g., 'FrozenBN', 'BN', 'SyncBN', 'GN', 'MixBN', 'MixGN', ...
-_C.KEYPOINT.GCE_HEAD.NORM = ""
-
-
-# ---------------------------------------------------------------------------- #
 # Parsing options
 # ---------------------------------------------------------------------------- #
 _C.PARSING = CN()
@@ -846,6 +713,9 @@ _C.PARSING.EDGE_WIDTH = 3
 
 # Use Parsing IoU for Parsing head
 _C.PARSING.PARSINGIOU_ON = False
+
+# Use CDG for Parsing head
+_C.PARSING.CDG_ON = False
 
 # Use QEM for Parsing head
 _C.PARSING.QEM_ON = False
@@ -929,6 +799,27 @@ _C.PARSING.PARSINGIOU.NORM = ""
 _C.PARSING.PARSINGIOU.LOSS_WEIGHT = 1.0
 
 # ---------------------------------------------------------------------------- #
+# CDG options
+# ---------------------------------------------------------------------------- #
+_C.PARSING.CDG = CN()
+
+# The head of CDG to use
+# (e.g., "cdg_head")
+_C.PARSING.CDG.CDG_HEAD = "cdg_head"
+
+# H, W of feature map
+_C.PARSING.CDG.FEAT_HW = (128, 96)
+
+# Hidden Conv layer dimension of CDG head
+_C.PARSING.CDG.CONV_DIM = 256
+
+# Kernel size of up conv1d
+_C.PARSING.CDG.UP_KERNEL_SIZE = 7
+
+# Loss weight for CDG head
+_C.PARSING.CDG.LOSS_WEIGHT = 45.0
+
+# ---------------------------------------------------------------------------- #
 # QEM options
 # ---------------------------------------------------------------------------- #
 _C.PARSING.QEM = CN()
@@ -988,73 +879,6 @@ _C.PARSING.QEM.IOU_LOSS_WEIGHT = 0.5
 
 
 # ---------------------------------------------------------------------------- #
-# UV options
-# ---------------------------------------------------------------------------- #
-_C.UV = CN()
-
-# The head of model to use
-# (e.g., 'simple_none_head', 'gce')
-_C.UV.UV_HEAD = 'simple_none_head'
-
-# Output module of UV head
-_C.UV.UV_OUTPUT = 'UV_outputs'
-
-# Output module of UV loss
-_C.UV.UV_LOSS = 'UV_loss'
-
-# Number of parts in the dataset
-_C.UV.NUM_PARTS = 14
-
-# Number of patches in the dataset
-_C.UV.NUM_PATCHES = 24
-
-# Weights
-_C.UV.INDEX_WEIGHTS = 5.0
-_C.UV.PART_WEIGHTS = 1.0
-_C.UV.POINT_REGRESSION_WEIGHTS = 0.001
-
-# Weights for calculating quality score (bbox_scores, iou_scores, pixel_scores)
-_C.UV.QUALITY_WEIGHTS = (1.0, 1.0, 0.0)
-
-# Index thresh
-_C.UV.INDEX_THRESH = 0.9
-
-# UV evaluating calc_mode to use
-# (e.g., "GPSm", "GPS", "IOU")
-_C.UV.CALC_MODE = "GPSm"
-
-# ---------------------------------------------------------------------------- #
-# UV gce head options
-# ---------------------------------------------------------------------------- #
-_C.UV.GCE_HEAD = CN()
-
-# Hidden Conv layer dimension
-_C.UV.GCE_HEAD.CONV_DIM = 512
-
-# Dimension for ASPP
-_C.UV.GCE_HEAD.ASPP_DIM = 256
-
-# Dilation for ASPP
-_C.UV.GCE_HEAD.ASPP_DILATION = (6, 12, 18)
-
-# Number of stacked Conv layers in GCE head before 
-_C.UV.GCE_HEAD.NUM_CONVS_BEFORE_ASPP = 0
-
-# Number of stacked Conv layers in GCE head after 
-_C.UV.GCE_HEAD.NUM_CONVS_AFTER_ASPP = 0
-
-# Use NonLocal in the UV gce head
-_C.UV.GCE_HEAD.USE_NL = False
-
-# Reduction ration of nonlocal
-_C.UV.GCE_HEAD.NL_RATIO = 1.0
-
-# Type of normalization in the UV gce head
-# E.g., 'FrozenBN', 'BN', 'SyncBN', 'GN', 'MixBN', 'MixGN', ...
-_C.UV.GCE_HEAD.NORM = ""
-
-
-# ---------------------------------------------------------------------------- #
 # Visualization options
 # ---------------------------------------------------------------------------- #
 _C.VIS = CN()
@@ -1098,55 +922,6 @@ _C.VIS.SHOW_CLASS.COLOR = (218, 227, 218)
 _C.VIS.SHOW_CLASS.FONT_SCALE = 0.45
 
 # ---------------------------------------------------------------------------- #
-# Show Mask options
-# ---------------------------------------------------------------------------- #
-_C.VIS.SHOW_MASK = CN()
-
-# Visualizing detection classes
-_C.VIS.SHOW_MASK.ENABLED = True
-
-# False = (255, 255, 255) = white
-_C.VIS.SHOW_MASK.MASK_COLOR_FOLLOW_BOX = True
-
-# Mask ahpha
-_C.VIS.SHOW_MASK.MASK_ALPHA = 0.4
-
-# Whether show border
-_C.VIS.SHOW_MASK.SHOW_BORDER = True
-
-# Border color, (255, 255, 255) for white, (0, 0, 0) for black
-_C.VIS.SHOW_MASK.BORDER_COLOR = (255, 255, 255)
-
-# Border thick
-_C.VIS.SHOW_MASK.BORDER_THICK = 2
-
-# ---------------------------------------------------------------------------- #
-# Show keypoints options
-# ---------------------------------------------------------------------------- #
-_C.VIS.SHOW_KPS = CN()
-
-# Visualizing detection keypoints
-_C.VIS.SHOW_KPS.ENABLED = True
-
-# Keypoints threshold
-_C.VIS.SHOW_KPS.KPS_TH = 0.4
-
-# Default: white
-_C.VIS.SHOW_KPS.KPS_COLOR_WITH_PARSING = (255, 255, 255)
-
-# Keypoints alpha
-_C.VIS.SHOW_KPS.KPS_ALPHA = 0.7
-
-# Link thick
-_C.VIS.SHOW_KPS.LINK_THICK = 2
-
-# Circle radius
-_C.VIS.SHOW_KPS.CIRCLE_RADIUS = 3
-
-# Circle thick
-_C.VIS.SHOW_KPS.CIRCLE_THICK = -1
-
-# ---------------------------------------------------------------------------- #
 # Show parsing options
 # ---------------------------------------------------------------------------- #
 _C.VIS.SHOW_PARSS = CN()
@@ -1169,36 +944,15 @@ _C.VIS.SHOW_PARSS.BORDER_COLOR = (255, 255, 255)
 # Border thick
 _C.VIS.SHOW_PARSS.BORDER_THICK = 1
 
-# ---------------------------------------------------------------------------- #
-# Show uv options
-# ---------------------------------------------------------------------------- #
-_C.VIS.SHOW_UV = CN()
-
-# Visualizing detection classes
-_C.VIS.SHOW_UV.ENABLED = True
-
-# Whether show border
-_C.VIS.SHOW_UV.SHOW_BORDER = True
-
-# Border thick
-_C.VIS.SHOW_UV.BORDER_THICK = 6
-
-# Grid thick
-_C.VIS.SHOW_UV.GRID_THICK = 2
-
-# Grid lines num
-_C.VIS.SHOW_UV.LINES_NUM = 15
 
 # ---------------------------------------------------------------------------- #
-# Show hier options (Not implemented)
+# WandB options
 # ---------------------------------------------------------------------------- #
-_C.VIS.SHOW_HIER = CN()
-
-# Visualizing detection classes
-_C.VIS.SHOW_HIER.ENABLED = True
-
-# Border thick
-_C.VIS.SHOW_HIER.BORDER_THICK = 2
+_C.WANDB = CN()
+_C.WANDB.ENABLED = True
+_C.WANDB.ENTITY = "soeaver"
+_C.WANDB.NAME = ""
+_C.WANDB.PROJECT = "QEM"
 
 
 def get_cfg():

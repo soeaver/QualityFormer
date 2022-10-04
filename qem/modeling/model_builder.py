@@ -4,10 +4,7 @@ import torch.nn as nn
 import qem.modeling.backbone
 import qem.modeling.fpn
 from qem.modeling import registry
-from qem.modeling.keypoint_head.keypoint import Keypoint
-from qem.modeling.mask_head.mask import Mask
 from qem.modeling.parsing_head.parsing import Parsing
-from qem.modeling.uv_head.uv import UV
 
 
 class Generalized_CNN(nn.Module):
@@ -30,17 +27,8 @@ class Generalized_CNN(nn.Module):
             self.dim_in = self.dim_in[-1:]
             self.spatial_in = self.spatial_in[-1:]
 
-        if self.cfg.MODEL.MASK_ON:
-            self.Mask = Mask(self.cfg, self.dim_in, self.spatial_in)
-
-        if self.cfg.MODEL.KEYPOINT_ON:
-            self.Keypoint = Keypoint(self.cfg, self.dim_in, self.spatial_in)
-
         if self.cfg.MODEL.PARSING_ON:
             self.Parsing = Parsing(self.cfg, self.dim_in, self.spatial_in)
-
-        if self.cfg.MODEL.UV_ON:
-            self.UV = UV(self.cfg, self.dim_in, self.spatial_in)
 
     def forward(self, x, targets=None):
         # Backbone
@@ -54,22 +42,10 @@ class Generalized_CNN(nn.Module):
 
         results = []
         losses = {}
-        if self.cfg.MODEL.MASK_ON:
-            result_mask, loss_mask = self.Mask(conv_features, targets)
-            results.append(result_mask)
-            losses.update(loss_mask)
-        if self.cfg.MODEL.KEYPOINT_ON:
-            result_keypoint, loss_keypoint = self.Keypoint(conv_features, targets)
-            results.append(result_keypoint)
-            losses.update(loss_keypoint)
         if self.cfg.MODEL.PARSING_ON:
             result_parsing, loss_parsing = self.Parsing(conv_features, targets)
             results.append(result_parsing)
             losses.update(loss_parsing)
-        if self.cfg.MODEL.UV_ON:
-            result_uv, loss_uv = self.UV(conv_features, targets)
-            results.append(result_uv)
-            losses.update(loss_uv)
 
         if self.training:
             outputs = {'metrics': {}, 'losses': {}}
@@ -87,18 +63,6 @@ class Generalized_CNN(nn.Module):
             conv_features = [conv_features[-1]]
         return conv_features
 
-    def mask_net(self, conv_features, targets=None):
-        result_mask, loss_mask = self.Mask(conv_features, targets)
-        return result_mask
-
-    def keypoint_net(self, conv_features, targets=None):
-        result_keypoint, loss_keypoint = self.Keypoint(conv_features, targets)
-        return result_keypoint
-
     def parsing_net(self, conv_features, targets=None):
         result_parsing, loss_parsing = self.Parsing(conv_features, targets)
         return result_parsing
-
-    def uv_net(self, conv_features, targets=None):
-        result_uv, loss_uv = self.UV(conv_features, targets)
-        return result_uv

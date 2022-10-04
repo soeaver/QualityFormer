@@ -23,6 +23,7 @@ def get_norm_op(norm="BN", eps=1e-5, group=32, an_k=10, **kwargs):
         "BN": lambda _num_channels: nn.BatchNorm2d(_num_channels, eps),
         "BN1d": lambda _num_channels: nn.BatchNorm1d(_num_channels, eps),
         "GN": lambda _num_channels: nn.GroupNorm(group, _num_channels, eps),
+        "LN": lambda dim: nn.LayerNorm(dim, eps),
         "FrozenBN": lambda _num_channels: ops.FrozenBatchNorm2d(_num_channels, eps),
         "SyncBN": lambda _num_channels: ops.NaiveSyncBatchNorm(_num_channels, eps),
         "MixBN": lambda _num_channels: ops.MixtureBatchNorm2d(an_k, _num_channels, eps),
@@ -101,6 +102,7 @@ def make_act(act='ReLU', **kwargs):
         "H_Sigmoid": nn.Hardsigmoid(),
         "Sigmoid": nn.Sigmoid(),
         "TanH": nn.Tanh(),
+        "GELU": nn.GELU(),
         "H_Swish": nn.Hardswish(),
         "Swish": ops.Swish(),   # torch >= 1.7.0, nn.SiLU()
         "Mish": ops.Mish(),

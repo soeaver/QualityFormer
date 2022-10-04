@@ -5,6 +5,7 @@ from qem.modeling import registry
 from qem.modeling.parsing_head import heads, outputs
 from qem.modeling.parsing_head.loss import parsing_loss_evaluator
 from qem.modeling.parsing_head.parsingiou.parsingiou import ParsingIoU
+from qem.modeling.parsing_head.cdg.cdg import CDG
 from qem.modeling.parsing_head.qem.qem import QEM
 
 
@@ -14,13 +15,20 @@ class Parsing(torch.nn.Module):
         self.dim_in = dim_in
         self.spatial_in = spatial_in
         self.parsingiou_on = cfg.PARSING.PARSINGIOU_ON
+        self.cdg_on = cfg.PARSING.CDG_ON
         self.qem_on = cfg.PARSING.QEM_ON
         self.qem_num = cfg.PARSING.QEM.STACK_NUM
 
+        # parsing head: none head
         head = registry.PARSING_HEADS[cfg.PARSING.PARSING_HEAD]
         self.Head = head(cfg, self.dim_in, self.spatial_in)
         self.dim_in = self.Head.dim_out
 
+        # cdg module
+        self.CDG = CDG(cfg, self.dim_in, self.spatial_in)
+        self.dim_in = self.CDG.dim_out
+
+        # qem module
         if self.qem_on:
             if self.qem_num == 1:
                 self.QEM = QEM(cfg, self.dim_in, self.spatial_in)
@@ -36,7 +44,7 @@ class Parsing(torch.nn.Module):
         self.loss_evaluator = parsing_loss_evaluator(cfg)
 
         if self.parsingiou_on:
-            self.ParsingIoU = ParsingIoU(cfg, self.Head.dim_out, self.Head.spatial_out)
+            self.ParsingIoU = ParsingIoU(cfg, self.dim_in, self.Head.spatial_out)
 
         self.dim_out = self.Output.dim_out
         self.spatial_out = self.Output.spatial_out
@@ -51,6 +59,10 @@ class Parsing(torch.nn.Module):
         losses = dict()
 
         x = self.Head(conv_features)
+
+        if self.cdg_on:
+            loss_cdg, x = self.CDG(x, targets['parsing'])
+            losses.update(loss_cdg)
 
         if self.qem_on:
             if self.qem_num == 1:
@@ -75,6 +87,9 @@ class Parsing(torch.nn.Module):
 
     def _forward_test(self, conv_features):
         x = self.Head(conv_features)
+
+        if self.cdg_on:
+            _, x = self.CDG(x, None)
 
         if self.qem_on:
             if self.qem_num == 1:

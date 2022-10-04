@@ -33,16 +33,9 @@ def build_dataset(cfg, is_train=True):
         args['image_thresh'] = cfg.TEST.IMAGE_THRESH
         extra_fields = get_extra_fields(dataset_name)
         ann_types = ()
-        if cfg.MODEL.MASK_ON:
-            ann_types = ann_types + ('mask',)
-            extra_fields.update(dict(mask_format=cfg.DATALOADER.GT_FORMAT.MASK))
-        if cfg.MODEL.KEYPOINT_ON:
-            ann_types = ann_types + ('keypoints',)
         if cfg.MODEL.PARSING_ON:
             ann_types = ann_types + ('parsing',)
             extra_fields.update(dict(semseg_format=cfg.DATALOADER.GT_FORMAT.SEMSEG))
-        if cfg.MODEL.UV_ON:
-            ann_types = ann_types + ('uv',)
         args['ann_types'] = ann_types
         args["transforms"] = transforms
         args['extra_fields'] = extra_fields
