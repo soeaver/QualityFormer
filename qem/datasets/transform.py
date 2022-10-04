@@ -29,6 +29,7 @@ def build_transforms(cfg, is_train=True):
                 T.ToTensor(),
                 T.CropAndResize(train_size, train_affine_mode),
                 T.Normalize(pixel_mean, pixel_std, mode=image_format),
+                T.GenerateTarget(0, 0, 0, 0),
             ]
         )
 

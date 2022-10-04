@@ -17,14 +17,14 @@ TO_REMOVE = 1
 class Instance(object):
     def __init__(self, bbox, image_size, labels, ann_types=None, instances=None):
         self.bbox = bbox
-        self.size = image_size # (w, h)
+        self.size = image_size  # (w, h)
         self.labels = labels
         self.ann_types = ann_types
         self.instances = {}
         self.aspect_ratio = 1.0
         self.trans = None
-        if 'mask' in self.ann_types:
-            self.instances['parsing'] = Parsing(instances['parsing'])
+        # if 'mask' in self.ann_types:
+        self.instances['parsing'] = Parsing(instances['parsing'])
 
     def convert(self, aspect_ratio, scale_ratio):
         """
@@ -49,17 +49,6 @@ class Instance(object):
             self.bbox = self.bbox * scale_ratio
         for ann_type in self.ann_types:
             self.instances[ann_type].convert(scale_ratio)
-
-    def half_body(self, num_half_body, upper_body_ids, x_ext_half_body, y_ext_half_body):
-        if len(self.ann_types) > 1:
-            raise NotImplementedError("half body only support one type now")
-        for ann_type in self.ann_types:
-            half_body_points = self.instances[ann_type].get_half_body_points(num_half_body, upper_body_ids)
-        bbox = half_body_transform(half_body_points, x_ext_half_body,
-            y_ext_half_body, self.aspect_ratio)
-
-        if bbox is not None:
-            self.bbox = bbox
 
     def scale(self, scale_factor):
         s = np.clip(np.random.randn() * scale_factor + 1, 1 - scale_factor, 1 + scale_factor)
@@ -114,30 +103,6 @@ class Parsing(object):
     def convert(self, scale_ratio):
         if scale_ratio != 1:
             self.parsing = cv2.resize(self.parsing, fx=scale_ratio, fy=scale_ratio, interpolation=cv2.INTER_NEAREST)
-
-    def get_half_body_points(self, num_half_body, upper_body_ids):
-        parsing_ids = np.unique(parsing)
-        selected_joints = []
-        if len(parsing_ids) - 1 > num_half_body:
-            upper_joints = []
-            lower_joints = []
-            for joint_id in parsing_ids:
-                if joint_id == 0:
-                    continue
-                mask = np.where(parsing == joint_id, 1, 0)
-                if mask.sum() > 100:
-                    if joint_id in upper_body_ids:
-                        upper_joints.extend(mask_to_bbox(mask))
-                    else:
-                        lower_joints.extend(mask_to_bbox(mask))
-
-            if np.random.randn() < 0.5 and len(upper_joints) > 6:
-                selected_joints = upper_joints
-            else:
-                selected_joints = lower_joints if len(lower_joints) > 6 else upper_joints
-        if len(selected_joints) < 6:
-            selected_joints = []
-        return selected_joints
 
     def flip(self, image_w=None):
         flipped_parsing = self.parsing[:, ::-1]
@@ -239,35 +204,6 @@ def point_affine(points, bbox, out_size):
     points[:, 1] = y
 
     return points
-
-
-def half_body_transform(half_body_points, x_ext_half_body, y_ext_half_body, aspect_ratio):
-    if len(half_body_points) == 0:
-        return None
-
-    selected_joints = np.array(half_body_points, dtype=np.float32)
-
-    left_top = np.amin(selected_joints, axis=0)
-    right_bottom = np.amax(selected_joints, axis=0)
-
-    center = (left_top + right_bottom) / 2
-
-    w = right_bottom[0] - left_top[0]
-    h = right_bottom[1] - left_top[1]
-
-    rand = np.random.rand()
-    w *= (1 + rand * x_ext_half_body)
-    rand = np.random.rand()
-    h *= (1 + rand * y_ext_half_body)
-
-    if w > aspect_ratio * h:
-        h = w * 1.0 / aspect_ratio
-    elif w < aspect_ratio * h:
-        w = h * aspect_ratio
-
-    bbox = torch.tensor([center[0], center[1], w, h, 0.])
-
-    return bbox
 
 
 def mask_to_bbox(mask):

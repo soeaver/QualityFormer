@@ -478,3 +478,15 @@ class CropAndResize(object):
             image = roi_align_rotated(image[None], rois, (self.size[1], self.size[0]), 1.0, 0, True)[0]
 
         return image, target
+
+
+class GenerateTarget(object):
+    def __init__(self, target_type, sigma, prob_size, size):
+        self.target_type = target_type
+        self.sigma = sigma
+        self.prob_size = prob_size
+        self.size = size
+
+    def __call__(self, image, target):
+        final_target = target.generate_target(self.target_type, self.sigma, self.prob_size, self.size)
+        return image, final_target
