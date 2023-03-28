@@ -196,4 +196,28 @@ COMMON_DATASETS = {
              'seg_root': _DATA_DIR + '/PASCAL-Person-Part/Testing/Category_ids',
              'label_shift': 0}
     },
+    'HRHP_train': {
+        _IM_DIR:
+            _DATA_DIR + '/HRHP/train_small/Images',
+        _ANN_FN:
+            _DATA_DIR + '/HRHP/annotations/HRHP_compact-box_private_train_small.json',
+        _FIELDS:
+            {'ann_types': ['bbox', 'mask', 'semseg', 'parsing'],
+             'flip_map': ([14, 15], [16, 17], [18, 19]),
+             'ignore_label': 255,
+             'seg_root': _DATA_DIR + '/HRHP/train_small/Category_ids',
+             'label_shift': 0}
+    },
+    'HRHP_val': {
+        _IM_DIR:
+            _DATA_DIR + '/HRHP/train_small/Images',
+        _ANN_FN:
+            _DATA_DIR + '/HRHP/annotations/HRHP_compact-box_private_val_small.json',
+        _FIELDS:
+            {'ann_types': ['bbox', 'mask', 'semseg', 'parsing'],
+             'flip_map': ([14, 15], [16, 17], [18, 19]),
+             'ignore_label': 255,
+             'seg_root': _DATA_DIR + '/HRHP/train_small/Category_ids',
+             'label_shift': 0}
+    },
 }
