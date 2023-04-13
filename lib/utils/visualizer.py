@@ -28,15 +28,10 @@ class Visualizer(object):
         if boxes is None or boxes.shape[0] == 0 or max(boxes[:, 4]) < self.cfg.VIS_TH:
             return self.im
 
-        if masks is not None and len(masks) > 0:
-            bit_masks = mask_util.decode(masks)
-        else:
-            bit_masks = masks
-
         # get color map
         ins_colormap = self.get_colormap(self.cfg.SHOW_BOX.COLORMAP)
 
-        # Display in largest to smallest order to reduce occlusion
+        # Display in largest to the smallest order to reduce occlusion
         areas = (boxes[:, 2] - boxes[:, 0]) * (boxes[:, 3] - boxes[:, 1])
         sorted_inds = np.argsort(-areas)
         timers['bbox_prproc'].toc()
@@ -64,10 +59,6 @@ class Visualizer(object):
                     timers['show_box'].tic()
                     self.vis_bbox((bbox[0], bbox[1], bbox[2] - bbox[0], bbox[3] - bbox[1]), ins_color)
                     timers['show_box'].toc()
-                elif len(bbox) == 5 and self.cfg.SHOW_BOX.SHOW_ROTATED_BOX:
-                    timers['show_box'].tic()
-                    self.vis_rotated_bbox(bbox, ins_color)
-                    timers['show_box'].toc()
                 else:
                     raise RuntimeError("Check the box format")
 
@@ -83,7 +74,7 @@ class Visualizer(object):
             if show_parss:
                 timers['show_parss'].tic()
                 parss_colormap = self.get_colormap(self.cfg.SHOW_PARSS.COLORMAP)
-                self.vis_parsing(parsings[i], parss_colormap, show_masks=show_masks)
+                self.vis_parsing(parsings[i][0], parss_colormap, show_masks=False)
                 timers['show_parss'].toc()
 
         # for k, v in timers.items():
@@ -109,26 +100,6 @@ class Visualizer(object):
         x1, y1 = int(x0 + w), int(y0 + h)
         x0, y0 = int(x0), int(y0)
         cv2.rectangle(self.im, (x0, y0), (x1, y1), bbox_color, thickness=self.cfg.SHOW_BOX.BORDER_THICK)
-
-    def vis_rotated_bbox(self, rotated_bbox, bbox_color):
-        """Visualizes a rotated bounding box."""
-        (x0, y0, w, h, a) = rotated_bbox
-        h_bbox = [(x0 - w / 2, y0 - h / 2),
-                  (x0 + w / 2, y0 - h / 2),
-                  (x0 + w / 2, y0 + h / 2),
-                  (x0 - w / 2, y0 + h / 2)]
-        import math
-        a = a * math.pi / 180
-        cos = math.cos(a)
-        sin = math.sin(a)
-        o_bbox = []
-        for i in range(len(h_bbox)):
-            x_i = int(sin * (h_bbox[i][1] - y0) + cos * (h_bbox[i][0] - x0) + x0)
-            y_i = int(cos * (h_bbox[i][1] - y0) - sin * (h_bbox[i][0] - x0) + y0)
-            o_bbox.append((x_i, y_i))
-        for j in range(len(o_bbox)):
-            cv2.line(self.im, o_bbox[j], o_bbox[(j + 1) % len(o_bbox)],
-                     bbox_color, thickness=self.cfg.SHOW_BOX.BORDER_THICK)
 
     def vis_class(self, pos, class_str, bg_color):
         """Visualizes the class."""
@@ -160,11 +131,10 @@ class Visualizer(object):
         border_color = self.cfg.SHOW_PARSS.BORDER_COLOR
         border_thick = self.cfg.SHOW_PARSS.BORDER_THICK
 
-        self.im[idx[0], idx[1], :] *= 1.0 - parsing_alpha
-        # self.im[idx[0], idx[1], :] += alpha * parsing_color
+        self.im[idx[0] - 1, idx[1] - 1, :] *= 1.0 - parsing_alpha
         self.im += parsing_alpha * parsing_color
 
-        if self.cfg.SHOW_PARSS.SHOW_BORDER and not show_masks:
+        if show_masks:
             try:
                 _, contours, _ = cv2.findContours(parsing.copy(), cv2.RETR_CCOMP, cv2.CHAIN_APPROX_NONE)
             except:
